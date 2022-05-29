@@ -133,8 +133,9 @@ class Basket {
                     img: img,
                     product_name: title,
                     price: price,
-                    count: count,
+                    quantity: count,
                 });
+                console.log(this.basketGoods.contents)
                 this.renderBasket()
             }
         });
