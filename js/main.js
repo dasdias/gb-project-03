@@ -126,7 +126,8 @@ class Basket {
                 const id = +productEl.dataset.id;
                 const img = productEl.querySelector('img').src;
                 const title = productEl.querySelector('h3').textContent;
-                const price = +productEl.querySelector('p').textContent.replace(/[a-zа-яёА-Я]+:|\$+/g, '');
+                // const price = +productEl.querySelector('p').textContent.replace(/[a-zа-яёА-Я]+:|\$+/g, '');
+                const price = +productEl.querySelector('p').textContent.replace(/\D+/g, '');
                 const count = 1;
                 this.basketGoods.contents.push({
                     id_product: id,
@@ -135,7 +136,6 @@ class Basket {
                     price: price,
                     quantity: count,
                 });
-                console.log(this.basketGoods.contents)
                 this.renderBasket()
             }
         });
@@ -147,11 +147,15 @@ class Basket {
             const target = e.target;
             if (target.classList.contains('remove-btn')) {
                 const productid = +target.closest('.product-item').dataset.id;
-                let index = this.basketGoods.contents.findIndex(item => item.id_product === productid);
+                const index = this.basketGoods.contents.findIndex(item => item.id_product === productid);
                 this.basketGoods.contents.splice(index, 1);
                 this.renderBasket();
             }
         });
+    }
+
+    _getBasketGoodsList() {
+        return this.basketGoods.contents;
     }
 }
 
