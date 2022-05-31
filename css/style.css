@@ -138,9 +138,20 @@ img {
 .modal__body .desc * + * {
     margin-left: 15px;
 }
+.count {
+    user-select: none;
+}
 .count span:first-child,
 .count span:last-child {
+    display: inline-flex;   
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
+    padding: 2px 5px;
+    background-color: #d6d4d4;
+    border-radius: 50%;
+    line-height: 1;
+    user-select: none;
 }
 .remove-btn {
     margin-top: 5px;

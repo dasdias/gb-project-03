@@ -93,6 +93,8 @@ class Basket {
             });
         this.removeItemFromBasket();
         this.addItemToBasket();
+        this.decrementItemInBasket();
+        this.incrementItemInBasket();
     }
 
     
@@ -129,14 +131,23 @@ class Basket {
                 // const price = +productEl.querySelector('p').textContent.replace(/[a-zа-яёА-Я]+:|\$+/g, '');
                 const price = +productEl.querySelector('p').textContent.replace(/\D+/g, '');
                 const count = 1;
-                this.basketGoods.contents.push({
-                    id_product: id,
-                    img: img,
-                    product_name: title,
-                    price: price,
-                    quantity: count,
-                });
-                this.renderBasket()
+
+                const index = this.basketGoods.contents.findIndex(item => item.id_product === id);
+
+                if (this.basketGoods.contents[index]?.id_product === id) {
+                    this.basketGoods.contents[index].quantity += 1;
+                    this.basketGoods.contents[index].totalPrice = this.basketGoods.contents[index].price * this.basketGoods.contents[index].quantity;
+                    this.renderBasket()
+                } else {
+                    this.basketGoods.contents.push({
+                        id_product: id,
+                        img: img,
+                        product_name: title,
+                        price: price,
+                        quantity: count,
+                    });
+                    this.renderBasket()
+                }
             }
         });
     }
@@ -154,6 +165,45 @@ class Basket {
         });
     }
 
+    incrementItemInBasket() {
+        const bodyContainer = document.querySelector(this.modalBodyBasket);
+        bodyContainer.addEventListener('click', (e) => {
+            const target = e.target;
+            const productid = +target.closest('.product-item').dataset.id;
+            if (!target.classList.contains('increment')) {
+                return;
+            }
+
+            const index = this.basketGoods.contents.findIndex(item => item.id_product === productid);
+            if (this.basketGoods.contents[index]?.id_product) {
+                this.basketGoods.contents[index].quantity += 1;
+                this.basketGoods.contents[index].totalPrice = this.basketGoods.contents[index].price * this.basketGoods.contents[index].quantity;
+                this.renderBasket()
+            }
+        });
+    }
+
+    decrementItemInBasket() {
+        const bodyContainer = document.querySelector(this.modalBodyBasket);
+        bodyContainer.addEventListener('click', (e) => {
+            const target = e.target;
+            const productid = +target.closest('.product-item').dataset.id;
+            
+            if (!target.classList.contains('decrement')) {
+                return;
+            }
+            const index = this.basketGoods.contents.findIndex(item => item.id_product === productid);
+            if (this.basketGoods.contents[index]?.id_product === productid && this.basketGoods.contents[index]?.quantity > 1) {
+                this.basketGoods.contents[index].quantity -= 1;
+                this.basketGoods.contents[index].totalPrice = this.basketGoods.contents[index].price * this.basketGoods.contents[index].quantity;
+                this.renderBasket()
+            } else {
+                this.basketGoods.contents.splice(index, 1);
+                this.renderBasket()
+            }
+        });
+    }
+
     _getBasketGoodsList() {
         return this.basketGoods.contents;
     }
@@ -166,19 +216,20 @@ class BasketItem {
         this.id = product.id_product;
         this.img = img;
         this.count = product.quantity;
+        this.totalPrice = product.totalPrice || product.price;
     }
     render(){
         return `<div class="product-item" data-id="${this.id}" ${this.count ? `data-count="${this.count}"` : ""}>
                 <img src="${this.img}" alt="Some img">
                 <div class="desc">
                     <h3>${this.title}</h3>
-                    <p>${this.price} $</p>
+                    <p>${this.totalPrice} $</p>
                     <button class="remove-btn">Удалить</button>
-                    <!--<div class="count">
-                        <span>-</span>
+                    <div class="count">
+                        <span class="decrement">–</span>
                         <span class="count__total">${this.count}</span>
-                        <span>+</span>
-                    </div>-->
+                        <span class="increment">+</span>
+                    </div>
                 </div>
             </div>`
     }
